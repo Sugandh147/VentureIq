@@ -1,12 +1,132 @@
-import React, { useState } from 'react';
-import { ArrowLeft, Download, Check, X, ShieldAlert, Award, FileText, CheckCircle2, ChevronDown, ChevronUp, Copy, HelpCircle } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { ArrowLeft, Download, Check, X, ShieldAlert, Award, FileText, CheckCircle2, ChevronDown, ChevronUp, Copy, HelpCircle, MessageSquare, Send, Calendar, Trash2, Radio } from 'lucide-react';
 import { TAMChart, FinancialChart, RiskHeatmap } from './Charts';
 
-export default function StartupDetail({ startup, onBack, subscription }) {
+export default function StartupDetail({ startup, onBack, subscription, refreshStartups }) {
   const [activeTab, setActiveTab] = useState('summary');
   const [openQuestion, setOpenQuestion] = useState(null);
   const [copiedMemo, setCopiedMemo] = useState(false);
   const [isSimplifyMode, setIsSimplifyMode] = useState(false);
+
+  // Advanced Interactive States
+  const [chatMessage, setChatMessage] = useState("");
+  const [chatHistory, setChatHistory] = useState([]);
+  const [chatLoading, setChatLoading] = useState(false);
+  const chatEndRef = useRef(null);
+
+  const [comments, setComments] = useState([]);
+  const [newCommentText, setNewCommentText] = useState("");
+  
+  const [votes, setVotes] = useState({ invest: 0, watch: 0, pass: 0, userVote: null });
+  const [signals, setSignals] = useState([]);
+
+  // Auto-scroll chat window
+  useEffect(() => {
+    if (chatEndRef.current) {
+      chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [chatHistory, chatLoading]);
+
+  // Load backend details when startup ID changes
+  useEffect(() => {
+    if (!startup) return;
+
+    fetch(`http://localhost:5000/api/startups/${startup.id}/comments`)
+      .then(res => res.json())
+      .then(data => setComments(data))
+      .catch(err => console.error("Error loading comments:", err));
+
+    fetch(`http://localhost:5000/api/startups/${startup.id}/votes`)
+      .then(res => res.json())
+      .then(data => setVotes(data))
+      .catch(err => console.error("Error loading votes:", err));
+
+    fetch(`http://localhost:5000/api/startups/${startup.id}/signals`)
+      .then(res => res.json())
+      .then(data => setSignals(data))
+      .catch(err => console.error("Error loading signals:", err));
+
+    // Reset Chat history with initial greeting
+    setChatHistory([
+      { 
+        sender: 'ai', 
+        text: `Hello! I am your AI Due Diligence Co-pilot. Ask me anything about **${startup.name}**'s market size, financials, risk matrix, or potential stress tests.` 
+      }
+    ]);
+  }, [startup?.id]);
+
+  const handleVote = (voteType) => {
+    const finalVote = votes.userVote === voteType ? null : voteType;
+    fetch(`http://localhost:5000/api/startups/${startup.id}/vote`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ voteType: finalVote })
+    })
+      .then(res => res.json())
+      .then(data => {
+        setVotes(data);
+        if (refreshStartups) refreshStartups();
+      })
+      .catch(err => console.error("Error casting vote:", err));
+  };
+
+  const handleAddComment = (e) => {
+    e.preventDefault();
+    if (!newCommentText.trim()) return;
+
+    fetch(`http://localhost:5000/api/startups/${startup.id}/comments`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: newCommentText, author: 'VC Analyst' })
+    })
+      .then(res => res.json())
+      .then(data => {
+        setComments(prev => [...prev, data]);
+        setNewCommentText("");
+      })
+      .catch(err => console.error("Error adding comment:", err));
+  };
+
+  const handleDeleteComment = (commentId) => {
+    fetch(`http://localhost:5000/api/startups/${startup.id}/comments/${commentId}`, {
+      method: 'DELETE'
+    })
+      .then(() => {
+        setComments(prev => prev.filter(c => c.id !== commentId));
+      })
+      .catch(err => console.error("Error deleting comment:", err));
+  };
+
+  const handleSendChatMessage = (e) => {
+    e.preventDefault();
+    if (!chatMessage.trim() || chatLoading) return;
+
+    const userMsg = { sender: 'user', text: chatMessage };
+    setChatHistory(prev => [...prev, userMsg]);
+    setChatMessage("");
+    setChatLoading(true);
+
+    fetch(`http://localhost:5000/api/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        startupId: startup.id,
+        message: userMsg.text,
+        history: chatHistory.concat(userMsg)
+      })
+    })
+      .then(res => res.json())
+      .then(data => {
+        setChatHistory(prev => [...prev, { sender: 'ai', text: data.reply }]);
+      })
+      .catch(err => {
+        console.error("Error chatting:", err);
+        setChatHistory(prev => [...prev, { sender: 'ai', text: "Sorry, I had trouble reaching the AI co-pilot. Please check backend connection." }]);
+      })
+      .finally(() => {
+        setChatLoading(false);
+      });
+  };
 
   if (!startup) return null;
 
@@ -122,6 +242,58 @@ export default function StartupDetail({ startup, onBack, subscription }) {
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '8px' }}>
             {getRecommendationBadge(startup.recommendation)}
             <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Consensus Recommendation</span>
+            
+            {/* Analyst Voting Widget */}
+            <div className="flex-center no-print" style={{ gap: '6px', marginTop: '4px', backgroundColor: 'var(--bg-primary)', padding: '4px', borderRadius: '8px', border: 'var(--card-border)' }}>
+              <button 
+                onClick={() => handleVote('invest')} 
+                className="btn"
+                style={{ 
+                  padding: '4px 8px', 
+                  fontSize: '11px', 
+                  gap: '4px', 
+                  borderRadius: '6px', 
+                  backgroundColor: votes.userVote === 'invest' ? 'var(--success-bg)' : 'transparent',
+                  color: votes.userVote === 'invest' ? 'var(--success-color)' : 'var(--text-secondary)',
+                  border: votes.userVote === 'invest' ? '1px solid var(--success-color)' : '1px solid transparent'
+                }}
+                title="Vote to Invest"
+              >
+                👍 Invest ({votes.invest || 0})
+              </button>
+              <button 
+                onClick={() => handleVote('watch')} 
+                className="btn"
+                style={{ 
+                  padding: '4px 8px', 
+                  fontSize: '11px', 
+                  gap: '4px', 
+                  borderRadius: '6px', 
+                  backgroundColor: votes.userVote === 'watch' ? 'var(--accent-glow)' : 'transparent',
+                  color: votes.userVote === 'watch' ? 'var(--accent-color)' : 'var(--text-secondary)',
+                  border: votes.userVote === 'watch' ? '1px solid var(--accent-color)' : '1px solid transparent'
+                }}
+                title="Vote to Watch"
+              >
+                👀 Watch ({votes.watch || 0})
+              </button>
+              <button 
+                onClick={() => handleVote('pass')} 
+                className="btn"
+                style={{ 
+                  padding: '4px 8px', 
+                  fontSize: '11px', 
+                  gap: '4px', 
+                  borderRadius: '6px', 
+                  backgroundColor: votes.userVote === 'pass' ? 'var(--danger-bg)' : 'transparent',
+                  color: votes.userVote === 'pass' ? 'var(--danger-color)' : 'var(--text-secondary)',
+                  border: votes.userVote === 'pass' ? '1px solid var(--danger-color)' : '1px solid transparent'
+                }}
+                title="Vote to Pass"
+              >
+                👎 Pass ({votes.pass || 0})
+              </button>
+            </div>
           </div>
         </div>
 
@@ -182,7 +354,7 @@ export default function StartupDetail({ startup, onBack, subscription }) {
       </div>
 
       {/* Tabs Menu */}
-      <div className="detail-tabs no-print">
+      <div className="detail-tabs no-print" style={{ overflowX: 'auto', whiteSpace: 'nowrap', display: 'flex', gap: '4px' }}>
         <button className={`detail-tab-btn ${activeTab === 'summary' ? 'active' : ''}`} onClick={() => setActiveTab('summary')}>Summary & Memo</button>
         <button className={`detail-tab-btn ${activeTab === 'team' ? 'active' : ''}`} onClick={() => setActiveTab('team')}>Team & Product</button>
         <button className={`detail-tab-btn ${activeTab === 'market' ? 'active' : ''}`} onClick={() => setActiveTab('market')}>Market & Business</button>
@@ -192,6 +364,9 @@ export default function StartupDetail({ startup, onBack, subscription }) {
         <button className={`detail-tab-btn ${activeTab === 'questions' ? 'active' : ''}`} onClick={() => setActiveTab('questions')}>
           Due Diligence ({visibleQuestions.length})
         </button>
+        <button className={`detail-tab-btn ${activeTab === 'copilot' ? 'active' : ''}`} onClick={() => setActiveTab('copilot')}>AI Co-pilot</button>
+        <button className={`detail-tab-btn ${activeTab === 'signals' ? 'active' : ''}`} onClick={() => setActiveTab('signals')}>Web Signals ({signals.length})</button>
+        <button className={`detail-tab-btn ${activeTab === 'collab' ? 'active' : ''}`} onClick={() => setActiveTab('collab')}>Collaboration ({comments.length})</button>
       </div>
 
       {/* Tab Contents */}
@@ -537,6 +712,228 @@ export default function StartupDetail({ startup, onBack, subscription }) {
                   </div>
                 );
               })}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 8. AI Co-pilot Chatbot */}
+      {activeTab === 'copilot' && (
+        <div className="animate-fade-in" style={{ display: 'grid', gridTemplateColumns: '3fr 1fr', gap: '24px', textAlign: 'left' }}>
+          {/* Chat Window */}
+          <div className="card" style={{ display: 'flex', flexDirection: 'column', height: '520px', padding: '16px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px', marginBottom: '12px' }}>
+              <MessageSquare size={20} style={{ color: 'var(--accent-color)' }} />
+              <div>
+                <h3 style={{ fontSize: '16px', margin: 0 }}>AI Due Diligence Co-pilot</h3>
+                <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Conversational Analyst Assistant</span>
+              </div>
+            </div>
+
+            {/* Message Log */}
+            <div className="chat-messages-log" style={{ flex: 1, overflowY: 'auto', paddingRight: '6px', display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '12px' }}>
+              {chatHistory.map((msg, idx) => (
+                <div 
+                  key={idx} 
+                  className={msg.sender === 'user' ? 'chat-bubble-user' : 'chat-bubble-ai'}
+                >
+                  {/* Parse markdown-like content in AI messages */}
+                  {msg.sender === 'user' ? (
+                    <p style={{ fontSize: '13px', margin: 0, whiteSpace: 'pre-wrap', lineHeight: '1.4' }}>{msg.text}</p>
+                  ) : (
+                    <div style={{ fontSize: '13px' }}>
+                      {msg.text.split('\n').map((line, lIdx) => {
+                        if (line.startsWith('### ')) {
+                          return <h4 key={lIdx} style={{ fontSize: '14px', fontWeight: 'bold', marginTop: '10px', marginBottom: '4px', color: 'var(--accent-color)' }}>{line.replace('### ', '')}</h4>;
+                        }
+                        if (line.startsWith('- ')) {
+                          return <div key={lIdx} style={{ paddingLeft: '8px', marginBottom: '2px', display: 'flex', alignItems: 'flex-start', gap: '6px' }}>&bull; <span>{line.replace('- ', '')}</span></div>;
+                        }
+                        return <p key={lIdx} style={{ margin: '0 0 6px 0', lineHeight: '1.4' }}>{line}</p>;
+                      })}
+                    </div>
+                  )}
+                </div>
+              ))}
+              {chatLoading && (
+                <div style={{ alignSelf: 'flex-start', backgroundColor: 'var(--bg-tertiary)', border: 'var(--card-border)', padding: '12px 16px', borderRadius: '12px 12px 12px 2px', display: 'flex', gap: '6px', alignItems: 'center' }}>
+                  <div className="spinner-ring" style={{ width: '12px', height: '12px', borderWidth: '2px', margin: 0 }} />
+                  <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Co-pilot is writing report analysis...</span>
+                </div>
+              )}
+              <div ref={chatEndRef} />
+            </div>
+
+            {/* Chat Input Form */}
+            <form onSubmit={handleSendChatMessage} style={{ display: 'flex', gap: '8px' }}>
+              <input 
+                type="text" 
+                className="form-input" 
+                placeholder={`Ask about ${startup.name}'s runway, risks, or market...`}
+                value={chatMessage}
+                onChange={(e) => setChatMessage(e.target.value)}
+                disabled={chatLoading}
+                style={{ fontSize: '13px', padding: '10px' }}
+              />
+              <button 
+                type="submit" 
+                className="btn btn-primary"
+                disabled={!chatMessage.trim() || chatLoading}
+                style={{ padding: '10px 14px', borderRadius: '8px' }}
+              >
+                <Send size={14} />
+              </button>
+            </form>
+          </div>
+
+          {/* Chat Sidebar/Diligence Info */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div className="card" style={{ padding: '16px' }}>
+              <h4 style={{ fontSize: '14px', marginBottom: '8px' }}>Stress Test Prompt Tips</h4>
+              <p style={{ fontSize: '11px', color: 'var(--text-secondary)', lineHeight: '1.4', marginBottom: '8px' }}>
+                Challenge the business model:
+              </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <button 
+                  onClick={() => setChatMessage("What if their monthly cash burn doubles next month?")}
+                  className="btn btn-secondary" 
+                  style={{ fontSize: '11px', padding: '6px 8px', width: '100%', justifyContent: 'flex-start', textAlign: 'left' }}
+                >
+                  💸 "What if burn doubles?"
+                </button>
+                <button 
+                  onClick={() => setChatMessage("Detail the legal and copyright risks of their product.")}
+                  className="btn btn-secondary" 
+                  style={{ fontSize: '11px', padding: '6px 8px', width: '100%', justifyContent: 'flex-start', textAlign: 'left' }}
+                >
+                  ⚖️ "Show regulatory threats"
+                </button>
+                <button 
+                  onClick={() => setChatMessage("How defensible is their competitive moat?")}
+                  className="btn btn-secondary" 
+                  style={{ fontSize: '11px', padding: '6px 8px', width: '100%', justifyContent: 'flex-start', textAlign: 'left' }}
+                >
+                  🛡️ "Check product moat"
+                </button>
+              </div>
+            </div>
+
+            <div className="card" style={{ padding: '16px', backgroundColor: 'var(--bg-tertiary)' }}>
+              <h4 style={{ fontSize: '13px', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <ShieldAlert size={14} style={{ color: 'var(--warning-color)' }} /> Sandbox Secure
+              </h4>
+              <p style={{ fontSize: '10px', color: 'var(--text-muted)', lineHeight: '1.3' }}>
+                Queries are processed locally inside VentureIQ. Model updates do not train third-party LLMs.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 9. Live Web Signals Feed */}
+      {activeTab === 'signals' && (
+        <div className="animate-fade-in" style={{ textAlign: 'left' }}>
+          <div className="card">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px', marginBottom: '16px' }}>
+              <Radio size={20} className="pulse-glow" style={{ color: 'var(--success-color)' }} />
+              <div>
+                <h3 style={{ fontSize: '18px', margin: 0 }}>Live Scraper Web Signals</h3>
+                <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Automated external data scans</span>
+              </div>
+            </div>
+
+            <p style={{ color: 'var(--text-secondary)', fontSize: '13px', marginBottom: '20px' }}>
+              VentureIQ continuously monitors signals on web registries, social platforms, and filing servers to alert investors of corporate changes.
+            </p>
+
+            <div className="signals-timeline">
+              {signals.map((sig) => (
+                <div key={sig.id} className="signal-node">
+                  <div className={`signal-marker ${sig.status === 'positive' ? 'positive' : 'neutral'}`} />
+                  <div>
+                    <div className="flex-between">
+                      <strong style={{ fontSize: '14px', color: 'var(--text-primary)' }}>{sig.type} &bull; {sig.title}</strong>
+                      <span style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <Calendar size={12} /> {new Date(sig.timestamp).toLocaleDateString()}
+                      </span>
+                    </div>
+                    <p style={{ fontSize: '12.5px', color: 'var(--text-secondary)', marginTop: '6px', lineHeight: '1.4' }}>
+                      {sig.content}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 10. Collaboration Board */}
+      {activeTab === 'collab' && (
+        <div className="animate-fade-in" style={{ textAlign: 'left' }}>
+          <div className="card">
+            <h3 style={{ fontSize: '18px', marginBottom: '6px' }}>Investment Analyst Collaboration Board</h3>
+            <p style={{ color: 'var(--text-muted)', fontSize: '12px', marginBottom: '20px' }}>
+              Add internal review notes, research observations, and checklist logs for due diligence alignment.
+            </p>
+
+            {/* Comment Form */}
+            <form onSubmit={handleAddComment} style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '24px', borderBottom: '1px solid var(--border-color)', paddingBottom: '20px' }}>
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label className="form-label">Create Analyst Note</label>
+                <textarea 
+                  className="form-textarea" 
+                  placeholder="Enter observation (e.g. Verified customer traction, found conflict in capitalization ratios...)" 
+                  value={newCommentText}
+                  onChange={(e) => setNewCommentText(e.target.value)}
+                  style={{ fontSize: '13px', minHeight: '80px' }}
+                />
+              </div>
+              <button 
+                type="submit" 
+                className="btn btn-primary" 
+                disabled={!newCommentText.trim()}
+                style={{ alignSelf: 'flex-end', padding: '8px 16px', fontSize: '13px' }}
+              >
+                Publish Note
+              </button>
+            </form>
+
+            {/* Comments List */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {comments.length > 0 ? (
+                comments.map((c) => (
+                  <div key={c.id} className="analyst-comment-card">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <div className="analyst-avatar-circle">
+                          {c.author.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+                        </div>
+                        <div style={{ textAlign: 'left' }}>
+                          <span style={{ fontSize: '13px', fontWeight: 'bold', color: 'var(--text-primary)' }}>{c.author}</span>
+                          <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '1px' }}>
+                            {new Date(c.timestamp).toLocaleString()}
+                          </div>
+                        </div>
+                      </div>
+                      <button 
+                        onClick={() => handleDeleteComment(c.id)}
+                        style={{ color: 'var(--danger-color)', opacity: 0.6, cursor: 'pointer' }}
+                        title="Delete note"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                    <p style={{ fontSize: '13px', color: 'var(--text-secondary)', whiteSpace: 'pre-wrap', lineHeight: '1.4', paddingLeft: '40px' }}>
+                      {c.text}
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <div style={{ padding: '24px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '13px' }}>
+                  No analyst notes published yet. Write the first note above!
+                </div>
+              )}
             </div>
           </div>
         </div>

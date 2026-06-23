@@ -9,6 +9,9 @@ export default function NewAnalysisForm({ onAnalysisComplete, currentCredits, on
   const [logIndex, setLogIndex] = useState(0);
   const [validationError, setValidationError] = useState("");
 
+  const [reportResult, setReportResult] = useState(null);
+  const [apiError, setApiError] = useState("");
+
   const extractionLogs = [
     `LOG: Querying startup registry index database for "${name}"...`,
     `LOG: Locating corporate filings and database records...`,
@@ -28,20 +31,29 @@ export default function NewAnalysisForm({ onAnalysisComplete, currentCredits, on
     if (analyzing && logIndex < extractionLogs.length) {
       timer = setTimeout(() => {
         setLogIndex(prev => prev + 1);
-      }, 700);
+      }, 600);
     } else if (analyzing && logIndex === extractionLogs.length) {
-      timer = setTimeout(() => {
-        const finalReport = generateReport({ name, websiteUrl });
-        onAnalysisComplete(finalReport);
+      if (apiError) {
+        setValidationError(apiError);
         setAnalyzing(false);
-      }, 800);
+      } else if (reportResult) {
+        onAnalysisComplete(reportResult);
+        setAnalyzing(false);
+      } else {
+        // Wait for the server response if it takes slightly longer
+        timer = setTimeout(() => {
+          setLogIndex(logIndex); // Trigger effect again
+        }, 300);
+      }
     }
     return () => clearTimeout(timer);
-  }, [analyzing, logIndex]);
+  }, [analyzing, logIndex, reportResult, apiError]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     setValidationError("");
+    setApiError("");
+    setReportResult(null);
     
     if (!name.trim()) return;
     if (currentCredits <= 0) return;
@@ -55,6 +67,27 @@ export default function NewAnalysisForm({ onAnalysisComplete, currentCredits, on
     
     setLogIndex(0);
     setAnalyzing(true);
+
+    // Call the Backend API
+    fetch('http://localhost:5000/api/startups', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ name, websiteUrl })
+    })
+      .then(res => {
+        if (!res.ok) {
+          return res.json().then(data => { throw new Error(data.error || 'Server error') });
+        }
+        return res.json();
+      })
+      .then(report => {
+        setReportResult(report);
+      })
+      .catch(err => {
+        setApiError(err.message);
+      });
   };
 
   if (analyzing) {

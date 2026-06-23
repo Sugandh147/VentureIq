@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Landmark, AlertTriangle, ShieldCheck, HelpCircle, Lock } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Landmark, AlertTriangle, ShieldCheck, HelpCircle, Lock, Save, FolderOpen } from 'lucide-react';
 
 export default function DealCalculator({ subscription, onUpgradeClick }) {
   // Simulator Parameters
@@ -8,6 +8,60 @@ export default function DealCalculator({ subscription, onUpgradeClick }) {
   const [optionPool, setOptionPool] = useState(10); // 10% option pool
   const [liqPrefMultiplier, setLiqPrefMultiplier] = useState(1); // 1x
   const [isParticipating, setIsParticipating] = useState(false); // Non-participating
+
+  // Backend Scenarios
+  const [scenarios, setScenarios] = useState([]);
+  const [scenarioName, setScenarioName] = useState("");
+  const [saveStatus, setSaveStatus] = useState("");
+
+  // Fetch scenarios from server on mount
+  useEffect(() => {
+    if (subscription === 'pro') {
+      fetch('http://localhost:5000/api/deal-calculator/scenarios')
+        .then(res => res.json())
+        .then(data => setScenarios(data))
+        .catch(err => console.error("Error fetching scenarios:", err));
+    }
+  }, [subscription]);
+
+  const handleSaveScenario = (e) => {
+    e.preventDefault();
+    if (!scenarioName.trim()) return;
+
+    fetch('http://localhost:5000/api/deal-calculator/scenarios', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        name: scenarioName,
+        preMoney,
+        roundSize,
+        optionPool,
+        liqPrefMultiplier,
+        isParticipating
+      })
+    })
+      .then(res => res.json())
+      .then(newScenario => {
+        setScenarios(prev => [...prev, newScenario]);
+        setScenarioName("");
+        setSaveStatus("Scenario saved!");
+        setTimeout(() => setSaveStatus(""), 2500);
+      })
+      .catch(err => {
+        console.error("Error saving scenario:", err);
+        setSaveStatus("Save failed.");
+      });
+  };
+
+  const handleLoadScenario = (scenario) => {
+    setPreMoney(scenario.preMoney);
+    setRoundSize(scenario.roundSize);
+    setOptionPool(scenario.optionPool);
+    setLiqPrefMultiplier(scenario.liqPrefMultiplier);
+    setIsParticipating(scenario.isParticipating);
+  };
 
   // Cap Table Math
   const postMoney = preMoney + roundSize;
@@ -106,6 +160,27 @@ export default function DealCalculator({ subscription, onUpgradeClick }) {
           <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '20px', textAlign: 'left' }}>
             <h3 style={{ fontSize: '18px', borderBottom: '1px solid var(--border-color)', paddingBottom: '10px' }}>Round Parameters</h3>
 
+            {/* Presets List */}
+            {scenarios.length > 0 && (
+              <div style={{ backgroundColor: 'var(--bg-tertiary)', padding: '12px', borderRadius: '8px', border: 'var(--card-border)', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <FolderOpen size={12} /> SELECT SAVED SCENARIO PRESET:
+                </span>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                  {scenarios.map((sc) => (
+                    <button 
+                      key={sc.id} 
+                      onClick={() => handleLoadScenario(sc)}
+                      className="btn btn-secondary" 
+                      style={{ padding: '4px 8px', fontSize: '11px', borderRadius: '4px' }}
+                    >
+                      {sc.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Pre-money valuation */}
             <div className="form-group">
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', fontWeight: '500' }}>
@@ -187,6 +262,34 @@ export default function DealCalculator({ subscription, onUpgradeClick }) {
                 </label>
               </div>
             </div>
+
+            {/* Save Current Scenario Preset Form */}
+            <form onSubmit={handleSaveScenario} style={{ borderTop: '1px solid var(--border-color)', paddingTop: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <label style={{ fontSize: '12px', fontWeight: 'bold', color: 'var(--text-secondary)' }}>Save Current Deal Preset</label>
+              <div style={{ display: 'flex', gap: '6px' }}>
+                <input 
+                  type="text" 
+                  className="form-input" 
+                  placeholder="e.g. Series A terms, Flat Round"
+                  value={scenarioName}
+                  onChange={(e) => setScenarioName(e.target.value)}
+                  style={{ padding: '6px 10px', fontSize: '12px', flex: 1 }}
+                  required
+                />
+                <button 
+                  type="submit" 
+                  className="btn btn-primary"
+                  style={{ padding: '6px 12px', fontSize: '12px', gap: '4px', justifyContent: 'center' }}
+                >
+                  <Save size={12} /> Save
+                </button>
+              </div>
+              {saveStatus && (
+                <span style={{ fontSize: '11px', color: saveStatus.includes("saved") ? 'var(--success-color)' : 'var(--danger-color)', display: 'block', marginTop: '2px' }}>
+                  {saveStatus}
+                </span>
+              )}
+            </form>
           </div>
 
           {/* Right panel: outputs & exit waterfall */}

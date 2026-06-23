@@ -1,0 +1,356 @@
+{
+  "user": {
+    "subscription": "free",
+    "analysisCredits": 0
+  },
+  "startups": [
+    {
+      "name": "CRED",
+      "industry": "FinTech",
+      "fundingStage": "Growth Stage",
+      "websiteUrl": "https://www.cred.club",
+      "dateAnalyzed": "2026-06-23",
+      "recommendation": "Investigate Further",
+      "scores": {
+        "team": 82,
+        "market": 76,
+        "product": 78,
+        "competition": 70,
+        "financial": 68,
+        "risk": 65,
+        "overall": 73
+      },
+      "executiveSummary": {
+        "problem": "Credit card users face confusing statement cycles, hidden charges, and lack of reward systems on standard bank apps.",
+        "solution": "CRED provides a central app that auto-checks statements, tracks hidden fees, and gives CRED coins for bill payments.",
+        "investmentThesis": "High retention of the top 1% of Indian consumers. However, monetization paths remain highly experimental with slow revenue scaling."
+      },
+      "executiveSummarySimple": {
+        "problem": "Banks make credit card bills confusing, hide extra fees, and don't reward people for paying on time.",
+        "solution": "CRED is an app that scans your card bills, alerts you about hidden charges, and gives you reward coins when you pay.",
+        "investmentThesis": "They have signed up the richest 1% of Indian card users. But they are still trying to figure out how to make high profits from them."
+      },
+      "founderAnalysis": {
+        "score": 88,
+        "background": "Kunal Shah (founder of Freecharge, seasoned angel investor).",
+        "experience": "Sold Freecharge to Snapdeal for $400M. Outstanding track record in consumer marketing and behavioral science.",
+        "strengths": [
+          "Unrivaled brand influence and networking capital in India.",
+          "Pioneering insights on high-income consumer conversion."
+        ],
+        "weaknesses": [
+          "Business model relies on multiple pivots to find scalable margins.",
+          "Extremely high advertising expenditures relative to core revenue."
+        ],
+        "missingHires": "Chief Financial Officer to structure direct consumer credit risk matrices."
+      },
+      "founderAnalysisSimple": {
+        "score": 88,
+        "background": "Kunal Shah (famous Indian internet entrepreneur).",
+        "experience": "Previously built Freecharge and sold it for $400M. Expert in marketing and understanding consumer habits.",
+        "strengths": [
+          "Highly respected in the Indian startup ecosystem.",
+          "Excellent at creating viral ads that attract high-income users."
+        ],
+        "weaknesses": [
+          "They have changed their business model multiple times trying to make profit.",
+          "They spend a massive amount of cash on marketing and TV commercials."
+        ],
+        "missingHires": "A risk manager to help launch their own lending/loan products."
+      },
+      "marketAnalysis": {
+        "tam": 15000,
+        "sam": 4500,
+        "som": 620,
+        "score": 76,
+        "trends": "Reserve Bank of India card data shows premium card spending expanding rapidly in metro hubs, offset by strict digital lending limits.",
+        "growthPotential": "Two-digit CAGR in credit cards bill volume among top income deciles."
+      },
+      "marketAnalysisSimple": {
+        "tam": 15000,
+        "sam": 4500,
+        "som": 620,
+        "score": 76,
+        "trends": "Wealthy people in India are using credit cards more than ever for travel and shopping.",
+        "growthPotential": "Card bill volumes are growing, but the government is making it harder to sell quick loans."
+      },
+      "productAnalysis": {
+        "score": 78,
+        "differentiation": "Members-only gating (requires credit score > 750), creating a prestigious consumer ecosystem.",
+        "moat": "High trust network. The brand cache and design assets build extreme customer lock-in.",
+        "defensibility": "Large proprietary credit behavior dataset of high-trust individuals.",
+        "innovation": 84
+      },
+      "productAnalysisSimple": {
+        "score": 78,
+        "differentiation": "Only people with good credit scores (above 750) can join, making it feel like an exclusive club.",
+        "moat": "Users love the premium feel and clean interface, making them stick with the app for years.",
+        "defensibility": "They have private data on the spending habits of India's richest citizens, which banks don't have in one place.",
+        "innovation": 84
+      },
+      "competitorAnalysis": {
+        "score": 70,
+        "direct": [
+          "OneCard",
+          "Standard Bank apps (HDFC, ICICI)"
+        ],
+        "indirect": [
+          "General payment processors (PhonePe, GPay)",
+          "Kirana cash loops"
+        ],
+        "features": [
+          {
+            "featureName": "Credit Score Gate",
+            "startupValue": true,
+            "competitor1": false,
+            "competitor2": false
+          },
+          {
+            "featureName": "Statement Hidden Fee Check",
+            "startupValue": true,
+            "competitor1": true,
+            "competitor2": false
+          },
+          {
+            "featureName": "Direct Bill Pay Integration",
+            "startupValue": true,
+            "competitor1": true,
+            "competitor2": true
+          },
+          {
+            "featureName": "Members E-commerce Store",
+            "startupValue": true,
+            "competitor1": false,
+            "competitor2": false
+          }
+        ],
+        "advantages": [
+          "Highest concentration of high-trust spending customers on a single app.",
+          "Superb user interface aesthetics driving high daily active metrics."
+        ],
+        "weaknesses": [
+          "Banks are upgrading their own credit cards applications.",
+          "Standard apps like GPay are adding credit card bill payments for free."
+        ]
+      },
+      "competitorAnalysisSimple": {
+        "score": 70,
+        "direct": [
+          "OneCard",
+          "Official Bank Apps"
+        ],
+        "indirect": [
+          "Google Pay",
+          "PhonePe"
+        ],
+        "features": [
+          {
+            "featureName": "Credit Score Gate",
+            "startupValue": true,
+            "competitor1": false,
+            "competitor2": false
+          },
+          {
+            "featureName": "Check hidden fees",
+            "startupValue": true,
+            "competitor1": true,
+            "competitor2": false
+          },
+          {
+            "featureName": "Pay bills on app",
+            "startupValue": true,
+            "competitor1": true,
+            "competitor2": true
+          },
+          {
+            "featureName": "Premium shopping store",
+            "startupValue": true,
+            "competitor1": false,
+            "competitor2": false
+          }
+        ],
+        "advantages": [
+          "Holds the contact details of almost all high-spending consumers in India.",
+          "The app looks like a luxury game, which users enjoy using."
+        ],
+        "weaknesses": [
+          "Official bank apps are copying their bill payment and reminder systems.",
+          "Google Pay allows card payments for free without any points gates."
+        ]
+      },
+      "businessModelAnalysis": {
+        "score": 72,
+        "streams": [
+          "CRED RentPay commission fees",
+          "CRED Flash peer-to-peer personal loans",
+          "Merchandiser ad fees on store listings"
+        ],
+        "pricing": "1-1.5% fee on RentPay, interest fees on personal loans.",
+        "segments": [
+          "Top 1% credit-score consumers in India"
+        ],
+        "scalability": "SaaS software scale is high, but audience is capped to high-income bands (approx 15 million households).",
+        "economics": "High customer acquisition costs offset by high retention of premium customers."
+      },
+      "businessModelAnalysisSimple": {
+        "score": 72,
+        "streams": [
+          "Fees when users pay rent with cards",
+          "Interest on quick personal loans",
+          "Charging brands to sell items on their app store"
+        ],
+        "pricing": "1% to 1.5% commission on house rent bills, plus interest rates on loans.",
+        "segments": [
+          "Rich Indian credit card holders"
+        ],
+        "scalability": "Software is easy to run, but their customer list is limited to the few million wealthy people in India.",
+        "economics": "They spend lots of money on marketing to acquire a user, but those users stay with the app for years."
+      },
+      "financialAnalysis": {
+        "score": 68,
+        "revenueGrowth": "Revenue increased to Rs 220cr in 2025. Still recording net operational losses.",
+        "burnRate": "Rs 5,200k monthly marketing and staff burn.",
+        "runway": "36 months with Rs 680cr cash reserves remaining.",
+        "marginAnalysis": "Gross margin is 72% but operating EBITDA remains negative due to high ad campaigns costs.",
+        "projections": [
+          {
+            "year": "2024",
+            "revenue": 95,
+            "burn": 480
+          },
+          {
+            "year": "2025",
+            "revenue": 220,
+            "burn": 620
+          },
+          {
+            "year": "2026 (Proj)",
+            "revenue": 450,
+            "burn": 500
+          },
+          {
+            "year": "2027 (Proj)",
+            "revenue": 920,
+            "burn": 420
+          }
+        ]
+      },
+      "financialAnalysisSimple": {
+        "score": 68,
+        "revenueGrowth": "Earning rose to Rs 220cr, but they are still losing money overall.",
+        "burnRate": "They spend Rs 5,200k a month on engineering salaries and TV ads.",
+        "runway": "They have enough cash reserves to survive for 3 years without earning a profit.",
+        "marginAnalysis": "They keep Rs 72 out of every Rs 100 earned, but their massive office rent and ads wipe out the profit.",
+        "projections": [
+          {
+            "year": "2024",
+            "revenue": 95,
+            "burn": 480
+          },
+          {
+            "year": "2025",
+            "revenue": 220,
+            "burn": 620
+          },
+          {
+            "year": "2026 (Proj)",
+            "revenue": 450,
+            "burn": 500
+          },
+          {
+            "year": "2027 (Proj)",
+            "revenue": 920,
+            "burn": 420
+          }
+        ]
+      },
+      "riskAssessment": [
+        {
+          "category": "Execution",
+          "name": "High Ad Burn Depend",
+          "level": "High",
+          "description": "Losing organic traction if direct marketing and sponsorship budgets are cut."
+        },
+        {
+          "category": "Regulatory",
+          "name": "RBI Lending Guidelines",
+          "level": "Critical",
+          "description": "Proposed restrictions on co-branded cards and peer-to-peer lending loops."
+        }
+      ],
+      "riskAssessmentSimple": [
+        {
+          "category": "Marketing",
+          "name": "Too dependent on ads",
+          "level": "High",
+          "description": "If they stop running expensive TV and cricket ads, users might forget the app."
+        },
+        {
+          "category": "Government",
+          "name": "Banking regulations",
+          "level": "Critical",
+          "description": "The central bank (RBI) is making rules that limit how apps can sell fast loans."
+        }
+      ],
+      "redFlags": [
+        {
+          "flagName": "Unviable EBITDA Margins",
+          "description": "Operating expenditures are heavily subsidised by venture cash injections."
+        },
+        {
+          "flagName": "Audience Cap Limit",
+          "description": "The 750+ credit score gate limits user growth to a small fraction of India's population."
+        }
+      ],
+      "redFlagsSimple": [
+        {
+          "flagName": "Heavy Money Loser",
+          "description": "They spend more cash running the app than they make in revenue."
+        },
+        {
+          "flagName": "Limited User Base",
+          "description": "Only rich people can use it, which stops them from growing into a mass-market app."
+        }
+      ],
+      "bullBear": {
+        "bull": [
+          "Monopolistic capture of India's high-spending card users.",
+          "Strong platform trust allowing simple launch of fintech loans."
+        ],
+        "bear": [
+          "Massive, continuous ad-spending drag on corporate cash flow.",
+          "Heavy exposure to RBI's strict digital lending guidelines."
+        ]
+      },
+      "bullBearSimple": {
+        "bull": [
+          "They own the contact lists of all rich card spenders in India.",
+          "Users trust the app and are willing to take loans through it."
+        ],
+        "bear": [
+          "They spend too much money sponsoring cricket cups.",
+          "Government rules can shut down their loan business anytime."
+        ]
+      },
+      "questions": [
+        {
+          "id": 1,
+          "category": "Financials",
+          "question": "What is your customer CAC payback period on current TV and cricket campaigns?",
+          "explanation": "Evaluates marketing efficacy."
+        },
+        {
+          "id": 2,
+          "category": "Regulatory",
+          "question": "How does RBI's digital card guidelines impact CRED Flash margins?",
+          "explanation": "Checks loan regulatory exposures."
+        }
+      ],
+      "investmentMemo": "### CRED Investment Memo\n\nCRED has locked down the premium credit demographic of India. However, the path to sustained corporate profitability remains complex, demanding a Hold or Investigate Further posture.",
+      "id": "cred_0112"
+    }
+  ],
+  "comments": {},
+  "votes": {},
+  "dealScenarios": []
+}

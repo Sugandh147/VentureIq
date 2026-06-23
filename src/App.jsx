@@ -15,22 +15,51 @@ export default function App() {
   const [theme, setTheme] = useState('dark');
   const [subscription, setSubscription] = useState('free');
   const [analysisCredits, setAnalysisCredits] = useState(1);
-  const [startups, setStartups] = useState(mockStartups);
+  const [startups, setStartups] = useState([]);
   const [selectedStartupId, setSelectedStartupId] = useState(null);
+
+  const API_URL = 'http://localhost:5000/api';
 
   // Initialize theme attribute
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
 
+  // Load startups and user info on mount
+  useEffect(() => {
+    refreshUser();
+    refreshStartups();
+  }, []);
+
+  const refreshUser = () => {
+    fetch(`${API_URL}/user`)
+      .then(res => res.json())
+      .then(data => {
+        setSubscription(data.subscription);
+        setAnalysisCredits(data.analysisCredits);
+      })
+      .catch(err => console.error("Error loading user info:", err));
+  };
+
+  const refreshStartups = () => {
+    fetch(`${API_URL}/startups`)
+      .then(res => res.json())
+      .then(data => {
+        setStartups(data);
+      })
+      .catch(err => console.error("Error loading startups:", err));
+  };
+
   // Adjust credit tokens when plan switches
   const handleSubscriptionChange = (newTier) => {
-    setSubscription(newTier);
-    if (newTier === 'free') {
-      setAnalysisCredits(1);
-    } else {
-      setAnalysisCredits(Infinity);
-    }
+    const endpoint = newTier === 'pro' ? '/user/upgrade' : '/user/reset';
+    fetch(`${API_URL}${endpoint}`, { method: 'POST' })
+      .then(res => res.json())
+      .then(data => {
+        setSubscription(data.subscription);
+        setAnalysisCredits(data.analysisCredits);
+      })
+      .catch(err => console.error("Error changing subscription:", err));
   };
 
   const toggleTheme = () => {
@@ -44,9 +73,7 @@ export default function App() {
 
   const handleAnalysisComplete = (newReport) => {
     setStartups(prev => [newReport, ...prev]);
-    if (analysisCredits !== Infinity) {
-      setAnalysisCredits(prev => Math.max(0, prev - 1));
-    }
+    refreshUser();
     setSelectedStartupId(newReport.id);
     setCurrentTab('detail');
   };
@@ -83,6 +110,7 @@ export default function App() {
               setCurrentTab('dashboard');
             }} 
             subscription={subscription}
+            refreshStartups={refreshStartups}
           />
         );
       case 'new-analysis':
