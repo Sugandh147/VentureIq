@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Search, SlidersHorizontal, ArrowUpDown, Eye } from 'lucide-react';
 
 export default function StartupList({ startups, onSelectStartup }) {

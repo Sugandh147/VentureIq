@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { Layers, Lock, Send, MessageSquare, Plus, ArrowRight, UserPlus, CheckCircle } from 'lucide-react';
+import { useState } from 'react';
+import { Lock, Send, MessageSquare, UserPlus, CheckCircle } from 'lucide-react';
 
-export default function Workspace({ subscription, setSubscription, startups }) {
+export default function Workspace({ subscription, setSubscription }) {
   const [comments, setComments] = useState([
     { id: 1, user: "Sarah Jenkins", role: "MD, Venture Fund", text: "QuantumVault looks solid. We should verify if they have any active discussions with defense contractors in Europe. Let's ask them on the upcoming call.", time: "2 hours ago" },
     { id: 2, user: "Marcus Vance", role: "Principal Analyst", text: "Reviewed BioSynthetix's pilot contracts. The royalty fee structure is standard and the 2% clause is locked. Highly recommend pushing to the investment committee.", time: "1 day ago" },

@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Landmark, Play, AlertTriangle, Terminal } from 'lucide-react';
-import { generateReport, validateStartupInput } from '../utils/reportGenerator';
+import { useState, useEffect } from 'react';
+import { Play, AlertTriangle, Terminal } from 'lucide-react';
+import { validateStartupInput } from '../utils/reportGenerator';
 
 export default function NewAnalysisForm({ onAnalysisComplete, currentCredits, onUpgradeClick }) {
   const [name, setName] = useState("");
@@ -34,11 +34,15 @@ export default function NewAnalysisForm({ onAnalysisComplete, currentCredits, on
       }, 600);
     } else if (analyzing && logIndex === extractionLogs.length) {
       if (apiError) {
-        setValidationError(apiError);
-        setAnalyzing(false);
+        setTimeout(() => {
+          setValidationError(apiError);
+          setAnalyzing(false);
+        }, 0);
       } else if (reportResult) {
-        onAnalysisComplete(reportResult);
-        setAnalyzing(false);
+        setTimeout(() => {
+          onAnalysisComplete(reportResult);
+          setAnalyzing(false);
+        }, 0);
       } else {
         // Wait for the server response if it takes slightly longer
         timer = setTimeout(() => {
@@ -47,7 +51,7 @@ export default function NewAnalysisForm({ onAnalysisComplete, currentCredits, on
       }
     }
     return () => clearTimeout(timer);
-  }, [analyzing, logIndex, reportResult, apiError]);
+  }, [analyzing, logIndex, reportResult, apiError, extractionLogs.length, onAnalysisComplete]);
 
   const handleSubmit = (e) => {
     e.preventDefault();

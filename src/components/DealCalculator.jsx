@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Landmark, AlertTriangle, ShieldCheck, HelpCircle, Lock, Save, FolderOpen } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Landmark, ShieldCheck, Lock, Save, FolderOpen } from 'lucide-react';
 
 export default function DealCalculator({ subscription, onUpgradeClick }) {
   // Simulator Parameters
@@ -82,8 +82,8 @@ export default function DealCalculator({ subscription, onUpgradeClick }) {
   const calculatePayout = (exitValue) => {
     const prefPayout = Math.min(exitValue, roundSize * liqPrefMultiplier);
     
-    let investorPayout = 0;
-    let founderPayout = 0;
+    let investorPayout;
+    let founderPayout;
 
     if (isParticipating) {
       // Participating: gets preference payout first, then splits remainder by actual ownership %

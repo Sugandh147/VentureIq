@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { CreditCard, Shield, Award, Zap, AlertTriangle, KeyRound, CheckCircle, RefreshCw } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { CreditCard, Shield, Award, Zap, AlertTriangle, KeyRound, CheckCircle } from 'lucide-react';
 
 export default function Billing({ subscription, setSubscription, analysisCredits, setAnalysisCredits }) {
   const [showModal, setShowModal] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState('');
   const [paymentStep, setPaymentStep] = useState('checkout'); // 'checkout' -> 'bank' -> 'processing' -> 'success'
   const [otp, setOtp] = useState('');
   const [timer, setTimer] = useState(120);
@@ -17,13 +16,14 @@ export default function Billing({ subscription, setSubscription, analysisCredits
         setTimer(prev => prev - 1);
       }, 1000);
     } else if (timer === 0) {
-      setErrorMessage("OTP verification expired. Please request a new code.");
+      setTimeout(() => {
+        setErrorMessage("OTP verification expired. Please request a new code.");
+      }, 0);
     }
     return () => clearInterval(interval);
   }, [paymentStep, timer]);
 
-  const handleOpenUpgrade = (plan) => {
-    setSelectedPlan(plan);
+  const handleOpenUpgrade = () => {
     setPaymentStep('checkout');
     setOtp('');
     setTimer(120);
@@ -103,7 +103,7 @@ export default function Billing({ subscription, setSubscription, analysisCredits
           <button 
             className="btn btn-primary" 
             style={{ width: '100%', justifyContent: 'center' }}
-            onClick={() => handleOpenUpgrade('pro')}
+            onClick={handleOpenUpgrade}
             disabled={subscription === 'pro'}
           >
             {subscription === 'pro' ? 'Pro Activated' : 'Upgrade to Pro'}
@@ -146,7 +146,7 @@ export default function Billing({ subscription, setSubscription, analysisCredits
                 <strong style={{ fontSize: '16px' }}>1000Rs/mo</strong>
                 <button 
                   className="btn btn-primary" 
-                  onClick={() => handleOpenUpgrade('pro')}
+                  onClick={handleOpenUpgrade}
                   disabled={subscription === 'pro'}
                   style={{ minWidth: '110px', justifyContent: 'center' }}
                 >

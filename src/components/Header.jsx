@@ -1,4 +1,3 @@
-import React from 'react';
 import { Sun, Moon, Briefcase, Award, Zap } from 'lucide-react';
 
 export default function Header({ currentTab, setCurrentTab, theme, toggleTheme, subscription }) {

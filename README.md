@@ -1,14 +1,12 @@
-# VentureIQ — Smart Startup Due Diligence Co-Pilot
+# VentureIQ — Institutional-Grade AI Startup Due Diligence Co-Pilot
 
-**VentureIQ** is an institutional-grade, full-stack web application designed to help venture capitalists, angel investors, and accelerators automate, store, and analyze startup due diligence.
+**VentureIQ** is a full-stack, secure, institutional-grade due diligence terminal designed for venture capital analysts, angel networks, and startup accelerators to automate risk checks, run Cap Table dilution waterfalls, and conduct interactive co-pilot screenings.
 
-Instead of parsing through endless spreadsheets, pitch decks, and filings, VentureIQ aggregates startup profiles, runs automated scraper signal checks, hosts dilution modeling simulators, and lets you interrogate a dedicated **AI Diligence Co-pilot** about specific business models, unit economics, or cash runway stress tests.
+Rather than manually parsing corporate registries, Cap Table coordinates, and financial reports, VentureIQ aggregates these profiles into an interactive co-pilot dashboard. Under the hood, an AI agent processes these models or falls back seamlessly to a local mathematical synthesis engine when offline.
 
 ---
 
-## 🏗️ Architecture Overview
-
-VentureIQ is built as a modular full-stack application:
+## 🏗️ Architectural Topology
 
 ```text
                   ┌────────────────────────────────┐
@@ -22,134 +20,101 @@ VentureIQ is built as a modular full-stack application:
                   │   (Controllers, Chat Routing)  │
                   └───────────────┬────────────────┘
                                   ├────────────────────────┐
-                                  ▼ (FS Read/Write)        ▼ (SDK API Call)
+                                  ▼ (Atomic FS Writes)     ▼ (SDK API Call)
                   ┌────────────────────────────────┐ ┌────────────────────────┐
                   │    Persistent JSON Database    │ │   Google Gemini API    │
                   │   (Startups, Notes, Scenarios) │ │ (Report & Chat Agent)  │
                   └────────────────────────────────┘ └────────────────────────┘
 ```
 
-- **Frontend**: **React** (v19) powered by **Vite** for fast, optimized hot reloads. Customized using a premium **Vanilla CSS** design system with native light/dark theme attributes and responsive typography layouts.
-- **Backend**: **Node.js** with **Express** server acting as a REST API gateway. Serves endpoints for user authentication states, deal simulator scenarios, note threads, and live signal feeds.
-- **Database**: Safe, lightweight, async file-based **JSON database** (`server/db.json`). Eliminates platform-dependent native compiler issues on Windows/Linux environments while supporting transactional updates, consensus recalculations, and note deletion cycles.
-- **AI Integrations**: Native SDK integration with **Google Generative AI** (Gemini models). Supports a seamless, local rule-based synthesis engine fallback when no API key is supplied, assuring 100% features work offline.
+- **Frontend client**: Built on **React** (v19) and **Vite** with customized **Vanilla CSS variables** supporting dynamic light and dark theme matrices, customized scrollbars, and fluid animations.
+- **Interactive Graphics**: Utilizes code-based inline SVG radar sweeps, pulsing grid mesh systems, and hover-triggered 3D card perspective transformations—completely eliminating large static picture assets.
+- **REST API server**: A secure **Express** gateway providing request logging, robust error-handling boundaries, and controllers for all portfolio calculations.
+- **Persistent Database**: High-speed, transactional, file-based async **JSON storage** (`server/db.json`) utilizing **atomic write-staging** (writes to a temporary file before renaming) to completely eliminate corruption vectors.
+- **AI Core Integration**: Connects with the **Google Generative AI SDK** (Gemini models) with a local rule-based synthesis compiler fallback that handles 100% of features offline if no API key is set.
 
 ---
 
-## 🚀 Key Full-Stack Capabilities
+## 🔌 API Gateway Interface
 
-### 1. 🔍 Dynamic Scrape & Diligence Generation
-Submit any startup name and optional URL. The backend runs validation checks, generates a due diligence report containing overall/segmented grade matrices (Team, Market, Product, Finances, Risks), drafts a formal VC investment memo, and persists the record to the database.
+The backend server exposes the following endpoints (listening on port `5000` by default):
 
-### 2. 💬 Conversational AI Due Diligence Co-pilot
-Chat directly with the AI co-pilot inside the startup details page. Ask targeted questions (*"What is their customer churn rate?"*, *"What happens if their monthly cash burn doubles?"*) or launch stress-testing prompts from the quick actions sidebar.
+### User Account Endpoints
+| Method | Endpoint | Request Body | Description |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/user` | None | Retrieves user subscription details and remaining credit counts. |
+| `POST` | `/api/user/upgrade` | None | Upgrades account to a Pro Analyst (sets credits to `Infinity`). |
+| `POST` | `/api/user/reset` | None | Resets subscription status to Free Tier (limits credits to `1`). |
 
-### 3. 👥 Consensus voting & Collaboration board
-- **Analyst Note Boards**: Analysts can publish, review, and delete notes or checklists on a startup due diligence page, saving logs instantly to the database.
-- **Consensus Rating**: Cast thumbs-up/down (Invest / Watch / Pass) votes. The backend automatically averages all votes to dynamically shift the Consensus Recommendation badge.
+### Startup Registry Endpoints
+| Method | Endpoint | Request Body | Description |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/startups` | None | Retrieves all analyzed startups saved in the database. |
+| `POST` | `/api/startups` | `{ "name": "...", "websiteUrl": "..." }` | Initiates AI/synthesized due diligence scraper logs and persists the report. |
+| `DELETE` | `/api/startups/:id` | None | Removes a startup report and all its associated comments and votes. |
+| `GET` | `/api/startups/:id/signals` | None | Generates dynamic WHOIS, sentiment, and regulatory timeline logs. |
 
-### 4. 📈 Cap Table Preset Manager
-Simulate option pool dilutions, liquidation multipliers (1x/2x), and participation payouts (Double Dipping). Save calculator slider coordinates under custom preset names (e.g. *Series A Flat Round*) to recall them later.
+### Collaboration & Consensus Endpoints
+| Method | Endpoint | Request Body | Description |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/startups/:id/comments` | None | Retrieves note feeds published by analysts for the startup. |
+| `POST` | `/api/startups/:id/comments` | `{ "text": "...", "author": "..." }` | Adds a new comment note onto the collaboration board. |
+| `DELETE` | `/api/startups/:id/comments/:commentId` | None | Deletes a specific comment card from the startup's thread. |
+| `GET` | `/api/startups/:id/votes` | None | Gathers consensus voting stats (invest, watch, pass counts). |
+| `POST` | `/api/startups/:id/vote` | `{ "voteType": "invest/watch/pass" }` | Registers or toggles a user vote, recalculating recommendations. |
 
-### 5. 📡 Live Scraper Signals timeline
-Monitors real-time alerts including WHOIS database extensions, social engineering mentions, and IP trademark filings using a connected timeline feed.
-
----
-
-## 📂 Project Structure
-
-```text
-├── server/                     # Backend Source Code
-│   ├── db.json                 # Persistent database storage
-│   ├── db.js                   # Async Database CRUD managers
-│   ├── index.js                # Express Server controllers & AI Router
-│   └── package.json            # Node backend dependencies
-│
-├── src/                        # Frontend React Application
-│   ├── components/
-│   │   ├── Dashboard.jsx       # Deal flow listings and general metrics
-│   │   ├── DealCalculator.jsx  # Cap table simulator & scenario presets
-│   │   ├── StartupDetail.jsx   # Tabbed view: chatbot, notes, signals
-│   │   ├── NewAnalysisForm.jsx # Scraper wizard with parallel API hooks
-│   │   └── LandingPage.jsx     # Institutional landing homepage
-│   │
-│   ├── utils/
-│   │   └── reportGenerator.js  # Core mathematical Synthesis logic
-│   │
-│   ├── App.jsx                 # Main state coordinator & router
-│   ├── index.css               # Core theme tokens (Dark & Light variables)
-│   └── main.jsx                # React DOM mount point
-```
+### Cap Table & Chat Endpoints
+| Method | Endpoint | Request Body | Description |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/deal-calculator/scenarios` | None | Retrieves all saved Cap Table scenarios. |
+| `POST` | `/api/deal-calculator/scenarios` | `{ "name": "...", "preMoney": 20, ... }` | Saves a Cap Table slider scenario configuration. |
+| `POST` | `/api/chat` | `{ "startupId": "...", "message": "...", "history": [...] }` | Interrogates the AI Co-pilot for specific metrics or stress-tests. |
 
 ---
 
-## ⚙️ Getting Started
+## 🚀 Setting Up the Terminal
 
-### 1. Prerequisites
-Ensure you have [Node.js](https://nodejs.org/) installed (v18 or higher recommended).
+### 1. Pre-requisites
+- **Node.js** v18.0.0 or higher.
+- **npm** or standard node package managers.
 
-### 2. Installation
-Install root modules (including concurrently) and server dependencies:
-
+### 2. Dependency Installation
+Initialize the workspace modules for both the frontend client and the backend server:
 ```bash
-# In the root workspace
+# Install root orchestration modules
 npm install
 
-# Inside the server directory
+# Install server endpoint modules
 cd server
 npm install
 cd ..
 ```
 
-### 3. Configure Environment Variables
-Create a `.env` file in the root workspace (you can copy `.env.example`):
-
-```bash
-cp .env.example .env
-```
-
-Open `.env` and configure:
+### 3. Environment Settings
+Create a `.env` file in the root directory (matching the layout in `.env.example`):
 ```env
 PORT=5000
-GEMINI_API_KEY=your_google_gemini_api_key_here
+GEMINI_API_KEY=your_gemini_api_key_here
 ```
-> **Note**: If `GEMINI_API_KEY` is left blank, the application will automatically activate the local rules-based compiler fallback.
+> **Offline Note**: If `GEMINI_API_KEY` is left blank, VentureIQ automatically routes all report queries and co-pilot chats through the rule-based local compiler.
 
 ### 4. Running the Application
-Launch both the Vite client and the Express backend simultaneously with a single command:
-
+Start both the React web application and Express server concurrently:
 ```bash
 npm run dev
 ```
-
-- **Frontend client** runs on: `http://localhost:5173`
-- **Backend API server** runs on: `http://localhost:5000`
+- **Vite Web Client**: Runs at `http://localhost:5173`
+- **Express Server**: Runs at `http://localhost:5000`
 
 ---
 
-## 🔌 API Documentation
+## 🔒 Reliability & Platform Safeguards
 
-### User Routes
-- `GET /api/user` — Returns current credit capacity and subscription type (Free vs Pro).
-- `POST /api/user/upgrade` — Upgrades the user account to a Pro Analyst (Sets credits to `Infinity`).
-- `POST /api/user/reset` — Resets the account status to Free (1 credit).
-
-### Startup Analysis Routes
-- `GET /api/startups` — Lists all analyzed startups.
-- `POST /api/startups` — Runs AI diligence (Gemini or local synthesis) and persists the report.
-- `DELETE /api/startups/:id` — Deletes a startup report and all its linked comments/votes.
-- `GET /api/startups/:id/signals` — Fetches real-time web signal timeline logs.
-
-### Collaboration & Voting Routes
-- `GET /api/startups/:id/comments` — Gets discussion notes.
-- `POST /api/startups/:id/comments` — Adds a new note.
-- `DELETE /api/startups/:id/comments/:commentId` — Deletes a note.
-- `GET /api/startups/:id/votes` — Returns consensus vote tallies.
-- `POST /api/startups/:id/vote` — Registers or toggles a user vote (`invest`, `watch`, `pass`).
-
-### Deal Calculator Routes
-- `GET /api/deal-calculator/scenarios` — Returns all saved cap table presets.
-- `POST /api/deal-calculator/scenarios` — Saves current slider settings.
-
-### Chat Router
-- `POST /api/chat` — Feeds current message, conversation history, and startup ID to the AI Diligence agent. Returns conversational analytical replies.
+1. **Atomic DB Transactions**: Every modification to `server/db.json` is staged to a temporary `db.json.tmp` file and renamed atomically, preventing database truncation or parsing crashes if the Node process gets interrupted mid-write.
+2. **Colored Console Logging**: The server console registers colorized, formatted summaries detailing paths, transaction status codes, and network latency response bounds:
+   ```text
+   [15:46:07] POST /api/startups -> 200 OK (22ms)
+   [15:46:12] GET /api/user -> 200 OK (3ms)
+   ```
+3. **Route Boundaries**: Centralized error middleware intercepts syntax errors, bad JSON formatting, or missing file arguments, preventing runtime crashes.
+4. **Theme Consistency**: Layout elements utilize native styling attributes that sync theme variables locally across reloads.

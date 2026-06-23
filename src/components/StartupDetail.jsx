@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, Download, Check, X, ShieldAlert, Award, FileText, CheckCircle2, ChevronDown, ChevronUp, Copy, HelpCircle, MessageSquare, Send, Calendar, Trash2, Radio } from 'lucide-react';
 import { TAMChart, FinancialChart, RiskHeatmap } from './Charts';
 
@@ -46,14 +46,16 @@ export default function StartupDetail({ startup, onBack, subscription, refreshSt
       .then(data => setSignals(data))
       .catch(err => console.error("Error loading signals:", err));
 
-    // Reset Chat history with initial greeting
-    setChatHistory([
-      { 
-        sender: 'ai', 
-        text: `Hello! I am your AI Due Diligence Co-pilot. Ask me anything about **${startup.name}**'s market size, financials, risk matrix, or potential stress tests.` 
-      }
-    ]);
-  }, [startup?.id]);
+    // Reset Chat history with initial greeting (deferred to prevent render cascades)
+    setTimeout(() => {
+      setChatHistory([
+        { 
+          sender: 'ai', 
+          text: `Hello! I am your AI Due Diligence Co-pilot. Ask me anything about **${startup.name}**'s market size, financials, risk matrix, or potential stress tests.` 
+        }
+      ]);
+    }, 0);
+  }, [startup]);
 
   const handleVote = (voteType) => {
     const finalVote = votes.userVote === voteType ? null : voteType;

@@ -32,7 +32,19 @@ export async function readDb() {
 }
 
 export async function writeDb(data) {
-  await fs.writeFile(DB_FILE, JSON.stringify(data, null, 2), 'utf-8');
+  const tempPath = DB_FILE + '.tmp';
+  try {
+    await fs.writeFile(tempPath, JSON.stringify(data, null, 2), 'utf-8');
+    await fs.rename(tempPath, DB_FILE);
+  } catch (error) {
+    // Attempt clean up of temp file if write/rename fails
+    try {
+      await fs.unlink(tempPath);
+    } catch {
+      // Temp file cleanup failed or already deleted; ignore
+    }
+    throw error;
+  }
 }
 
 export async function getUser() {

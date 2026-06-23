@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 // Concentric TAM/SAM/SOM Circles Chart
 export function TAMChart({ tam, sam, som }) {

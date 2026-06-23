@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Header from './components/Header';
 import LandingPage from './components/LandingPage';
 import Dashboard from './components/Dashboard';
@@ -6,7 +6,6 @@ import StartupDetail from './components/StartupDetail';
 import NewAnalysisForm from './components/NewAnalysisForm';
 import Billing from './components/Billing';
 import DealCalculator from './components/DealCalculator';
-import { mockStartups } from './utils/mockData';
 import { Landmark, CreditCard, Plus, Percent } from 'lucide-react';
 import './App.css';
 
@@ -24,12 +23,6 @@ export default function App() {
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
-
-  // Load startups and user info on mount
-  useEffect(() => {
-    refreshUser();
-    refreshStartups();
-  }, []);
 
   const refreshUser = () => {
     fetch(`${API_URL}/user`)
@@ -49,6 +42,12 @@ export default function App() {
       })
       .catch(err => console.error("Error loading startups:", err));
   };
+
+  // Load startups and user info on mount
+  useEffect(() => {
+    refreshUser();
+    refreshStartups();
+  }, []);
 
   // Adjust credit tokens when plan switches
   const handleSubscriptionChange = (newTier) => {

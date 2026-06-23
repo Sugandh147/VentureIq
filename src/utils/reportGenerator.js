@@ -24,7 +24,7 @@ export const validateStartupInput = (name, url) => {
     const cleanUrl = url.trim().toLowerCase();
     
     // Check standard URL format
-    const urlPattern = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([\/\w .-]*)*\/?$/i;
+    const urlPattern = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/i;
     if (!urlPattern.test(cleanUrl)) {
       return { valid: false, message: "Scraping Error: Invalid website URL structure." };
     }
@@ -765,7 +765,7 @@ export const generateReport = (inputs) => {
   const risk = 60 + ((nameHash * 6) % 31);
   const overall = Math.round((team + market + product + competition + financial + risk) / 6);
 
-  let recommendation = "Investigate Further";
+  let recommendation;
   if (overall >= 84) recommendation = "Strong Invest";
   else if (overall >= 76) recommendation = "Invest";
   else if (overall >= 65) recommendation = "Investigate Further";
@@ -776,7 +776,6 @@ export const generateReport = (inputs) => {
   const burnRate = 5 + (nameHash % 45);
   const cashRemaining = 80 + (nameHash % 12) * burnRate;
   const runwayMonths = Math.round((cashRemaining / burnRate) * 10) / 10;
-  const arr = revCurrent * 12;
 
   const tambillions = (2.5 + (nameHash % 15) * 1.5).toFixed(1);
   const tamM = Math.round(parseFloat(tambillions) * 1000);

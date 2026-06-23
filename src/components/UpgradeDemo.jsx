@@ -1,7 +1,6 @@
-import React from 'react';
 import { ShieldCheck, Zap, Award, CheckCircle2, ArrowRight, Landmark } from 'lucide-react';
 
-export default function UpgradeDemo({ subscription, setSubscription, setCurrentTab }) {
+export default function UpgradeDemo({ setSubscription, setCurrentTab }) {
   const handleUpgrade = (tier) => {
     setSubscription(tier);
     setCurrentTab('billing'); // Redirect to billing checkout

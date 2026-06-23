@@ -1,8 +1,7 @@
+/* global process */
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import path from 'path';
-import { fileURLToPath } from 'url';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import * as db from './db.js';
 import { generateReport, validateStartupInput } from '../src/utils/reportGenerator.js';
@@ -10,13 +9,28 @@ import { generateReport, validateStartupInput } from '../src/utils/reportGenerat
 // Load environment variables
 dotenv.config();
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
+
+// Beautiful colorized API logger middleware
+app.use((req, res, next) => {
+  const start = Date.now();
+  res.on('finish', () => {
+    const duration = Date.now() - start;
+    let statusColor = '\x1b[32m'; // green for 2xx
+    if (res.statusCode >= 400 && res.statusCode < 500) {
+      statusColor = '\x1b[33m'; // yellow for 4xx
+    } else if (res.statusCode >= 500) {
+      statusColor = '\x1b[31m'; // red for 5xx
+    }
+    const timestamp = new Date().toISOString().split('T')[1].slice(0, 8);
+    console.log(`[${timestamp}] \x1b[36m${req.method}\x1b[0m \x1b[35m${req.originalUrl}\x1b[0m -> ${statusColor}${res.statusCode}\x1b[0m (${duration}ms)`);
+  });
+  next();
+});
 
 // Database is clean. No preseeded startups.
 
@@ -160,6 +174,7 @@ app.delete('/api/startups/:id', async (req, res) => {
 app.get('/api/startups/:id/signals', async (req, res) => {
   try {
     const id = req.params.id;
+    console.log(`Generating signals for startup ID: ${id}`);
     // Generate some dynamic mock signals based on the startup
     const signals = [
       {
@@ -440,6 +455,14 @@ What aspect of **${startup.name}**'s business model would you like to stress-tes
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
+});
+
+// Central global error handler middleware to prevent crash on unexpected exceptions
+/* eslint-disable-next-line no-unused-vars */
+app.use((err, req, res, _next) => {
+  const timestamp = new Date().toISOString().split('T')[1].slice(0, 8);
+  console.error(`[${timestamp}] \x1b[31m[EXCEP] Route Error:\x1b[0m ${req.method} ${req.url} -`, err.message || err);
+  res.status(500).json({ error: "Internal Server Error occurred. Please verify parameters." });
 });
 
 // Start Server

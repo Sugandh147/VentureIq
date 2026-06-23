@@ -1,5 +1,4 @@
-import React from 'react';
-import { ShieldCheck, Flame, BarChart3, CheckCircle, HelpCircle, Zap, Award } from 'lucide-react';
+import { ShieldCheck, Flame, BarChart3, CheckCircle, HelpCircle, Zap } from 'lucide-react';
 
 export default function LandingPage({ setCurrentTab, subscription, setSubscription }) {
   const handleUpgrade = (tier) => {
@@ -28,32 +27,173 @@ export default function LandingPage({ setCurrentTab, subscription, setSubscripti
             </div>
           </div>
 
-          {/* Hero Banner Graphic Illustration */}
+          {/* Interactive Code-Based SVG & CSS Graphics Animation */}
           <div style={{ position: 'relative', width: '100%', display: 'flex', justifyContent: 'center' }} className="no-print">
-            <div style={{ position: 'absolute', inset: '-10px', background: 'var(--accent-glow)', filter: 'blur(40px)', borderRadius: '24px', opacity: 0.6, zIndex: 1 }} />
-            <img 
-              src="/hero_illustration.png" 
-              alt="VentureIQ AI Analytics Banner" 
-              style={{ 
-                width: '100%', 
-                maxHeight: '380px', 
-                objectFit: 'cover', 
-                borderRadius: '16px', 
-                border: 'var(--card-border)', 
-                boxShadow: 'var(--shadow-lg)', 
-                position: 'relative', 
-                zIndex: 2,
-                transform: 'perspective(800px) rotateY(-8deg) rotateX(4deg)',
-                transition: 'transform 0.4s ease',
-                cursor: 'pointer'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'perspective(800px) rotateY(0deg) rotateX(0deg) scale(1.02)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'perspective(800px) rotateY(-8deg) rotateX(4deg)';
-              }}
-            />
+            <div style={{ position: 'absolute', inset: '-15px', background: 'var(--accent-glow)', filter: 'blur(50px)', borderRadius: '24px', opacity: 0.5, zIndex: 1 }} />
+            
+            <div style={{
+              width: '100%',
+              maxWidth: '480px',
+              borderRadius: '16px',
+              border: 'var(--card-border)',
+              boxShadow: 'var(--shadow-lg)',
+              background: 'var(--bg-secondary)',
+              padding: '16px',
+              position: 'relative',
+              zIndex: 2,
+              transform: 'perspective(1000px) rotateY(-6deg) rotateX(3deg)',
+              transition: 'transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.5s ease',
+              cursor: 'pointer',
+              overflow: 'hidden'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'perspective(1000px) rotateY(0deg) rotateX(0deg) scale(1.03)';
+              e.currentTarget.style.boxShadow = '0 20px 40px rgba(0, 0, 0, 0.15), 0 0 30px var(--accent-glow)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'perspective(1000px) rotateY(-6deg) rotateX(3deg)';
+              e.currentTarget.style.boxShadow = 'var(--shadow-lg)';
+            }}
+            >
+              <svg viewBox="0 0 500 400" style={{ width: '100%', height: 'auto', display: 'block' }}>
+                <defs>
+                  {/* Grid pattern */}
+                  <pattern id="radar-grid" width="30" height="30" patternUnits="userSpaceOnUse">
+                    <path d="M 30 0 L 0 0 0 30" fill="none" stroke="var(--border-color)" strokeWidth="0.5" opacity="0.4" />
+                  </pattern>
+                  {/* Glowing gradients */}
+                  <radialGradient id="center-glow" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stopColor="var(--accent-color)" stopOpacity="0.4" />
+                    <stop offset="100%" stopColor="var(--accent-color)" stopOpacity="0" />
+                  </radialGradient>
+                </defs>
+
+                <style>{`
+                  @keyframes rotate-sweep {
+                    from { transform: rotate(0deg); }
+                    to { transform: rotate(360deg); }
+                  }
+                  @keyframes pulse-ring {
+                    0% { r: 10px; opacity: 1; }
+                    100% { r: 70px; opacity: 0; }
+                  }
+                  @keyframes flow-dash {
+                    to { stroke-dashoffset: -20; }
+                  }
+                  @keyframes float-node {
+                    0%, 100% { transform: translateY(0); }
+                    50% { transform: translateY(-6px); }
+                  }
+                  .grid-bg {
+                    fill: url(#radar-grid);
+                  }
+                  .scan-sweep {
+                    transform-origin: 250px 200px;
+                    animation: rotate-sweep 8s linear infinite;
+                  }
+                  .pulse-circle {
+                    transform-origin: 250px 200px;
+                    animation: pulse-ring 4s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+                  }
+                  .pulse-circle-delayed {
+                    transform-origin: 250px 200px;
+                    animation: pulse-ring 4s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+                    animation-delay: 2s;
+                  }
+                  .flowing-path {
+                    stroke-dasharray: 6,4;
+                    animation: flow-dash 1.2s linear infinite;
+                  }
+                  .node-group {
+                    transition: transform 0.3s ease;
+                  }
+                  .node-group:hover {
+                    transform: scale(1.1);
+                  }
+                  .node-1 { animation: float-node 5s ease-in-out infinite; transform-origin: 150px 110px; }
+                  .node-2 { animation: float-node 6s ease-in-out infinite; animation-delay: 1s; transform-origin: 360px 130px; }
+                  .node-3 { animation: float-node 5.5s ease-in-out infinite; animation-delay: 0.5s; transform-origin: 130px 290px; }
+                  .node-4 { animation: float-node 6.5s ease-in-out infinite; animation-delay: 1.5s; transform-origin: 350px 280px; }
+                  .status-text {
+                    font-family: monospace;
+                    font-size: 10px;
+                    fill: var(--text-muted);
+                  }
+                `}</style>
+
+                {/* Cyber Grid Background */}
+                <rect width="500" height="400" className="grid-bg" rx="10" />
+
+                {/* Radar Concentric Rings */}
+                <circle cx="250" cy="200" r="130" stroke="var(--border-color)" strokeWidth="1" fill="none" opacity="0.5" />
+                <circle cx="250" cy="200" r="95" stroke="var(--border-color)" strokeWidth="1" fill="none" opacity="0.7" />
+                <circle cx="250" cy="200" r="60" stroke="var(--accent-color)" strokeWidth="1" fill="none" opacity="0.3" />
+
+                {/* Radial glow background at center */}
+                <circle cx="250" cy="200" r="100" fill="url(#center-glow)" pointerEvents="none" />
+
+                {/* Pulsing Concentric waves from scanner core */}
+                <circle cx="250" cy="200" r="30" stroke="var(--accent-color)" strokeWidth="1.5" fill="none" className="pulse-circle" />
+                <circle cx="250" cy="200" r="30" stroke="var(--accent-color)" strokeWidth="1.5" fill="none" className="pulse-circle-delayed" />
+
+                {/* Flowing connection lines to the 4 nodes */}
+                <line x1="250" y1="200" x2="150" y2="110" stroke="var(--success-color)" strokeWidth="1.5" className="flowing-path" />
+                <line x1="250" y1="200" x2="360" y2="130" stroke="var(--accent-color)" strokeWidth="1.5" className="flowing-path" />
+                <line x1="250" y1="200" x2="130" y2="290" stroke="var(--warning-color)" strokeWidth="1.5" className="flowing-path" />
+                <line x1="250" y1="200" x2="350" y2="280" stroke="var(--danger-color)" strokeWidth="1.5" className="flowing-path" />
+
+                {/* Rotating scanner sweep */}
+                <line x1="250" y1="200" x2="250" y2="70" stroke="var(--accent-color)" strokeWidth="2.5" strokeLinecap="round" className="scan-sweep" opacity="0.8" />
+                <polygon points="250,200 220,74 250,70" fill="var(--accent-glow)" className="scan-sweep" opacity="0.3" />
+
+                {/* Scanner Core Center Dot */}
+                <circle cx="250" cy="200" r="6" fill="var(--accent-color)" />
+                <circle cx="250" cy="200" r="2" fill="#ffffff" />
+
+                {/* NODE 1: Team & Founder Capability */}
+                <g className="node-group node-1">
+                  <circle cx="150" cy="110" r="20" fill="var(--bg-secondary)" stroke="var(--success-color)" strokeWidth="2" />
+                  <circle cx="150" cy="110" r="6" fill="var(--success-color)" />
+                  <rect x="90" y="140" width="120" height="24" rx="4" fill="var(--bg-tertiary)" stroke="var(--border-color)" strokeWidth="1" />
+                  <text x="150" y="156" textAnchor="middle" fontSize="10" fontWeight="bold" fill="var(--text-primary)">Founder Score: 95%</text>
+                  {/* Technical connection dot */}
+                  <circle cx="150" cy="110" r="24" stroke="var(--success-color)" strokeWidth="0.5" strokeDasharray="2,2" fill="none" />
+                </g>
+
+                {/* NODE 2: Market Size (TAM/SAM/SOM) */}
+                <g className="node-group node-2">
+                  <circle cx="360" cy="130" r="20" fill="var(--bg-secondary)" stroke="var(--accent-color)" strokeWidth="2" />
+                  <circle cx="360" cy="130" r="6" fill="var(--accent-color)" />
+                  <rect x="300" y="160" width="120" height="24" rx="4" fill="var(--bg-tertiary)" stroke="var(--border-color)" strokeWidth="1" />
+                  <text x="360" y="176" textAnchor="middle" fontSize="10" fontWeight="bold" fill="var(--text-primary)">TAM Target: Rs 15k Cr</text>
+                  <circle cx="360" cy="130" r="24" stroke="var(--accent-color)" strokeWidth="0.5" strokeDasharray="2,2" fill="none" />
+                </g>
+
+                {/* NODE 3: Financial & Runway Projections */}
+                <g className="node-group node-3">
+                  <circle cx="130" cy="290" r="20" fill="var(--bg-secondary)" stroke="var(--warning-color)" strokeWidth="2" />
+                  <circle cx="130" cy="290" r="6" fill="var(--warning-color)" />
+                  <rect x="70" y="320" width="120" height="24" rx="4" fill="var(--bg-tertiary)" stroke="var(--border-color)" strokeWidth="1" />
+                  <text x="130" y="336" textAnchor="middle" fontSize="10" fontWeight="bold" fill="var(--text-primary)">Cash Runway: 24 Mo</text>
+                  <circle cx="130" cy="290" r="24" stroke="var(--warning-color)" strokeWidth="0.5" strokeDasharray="2,2" fill="none" />
+                </g>
+
+                {/* NODE 4: Red Flag Risk Assessments */}
+                <g className="node-group node-4">
+                  <circle cx="350" cy="280" r="20" fill="var(--bg-secondary)" stroke="var(--danger-color)" strokeWidth="2" />
+                  <circle cx="350" cy="280" r="6" fill="var(--danger-color)" />
+                  <rect x="290" y="310" width="120" height="24" rx="4" fill="var(--bg-tertiary)" stroke="var(--border-color)" strokeWidth="1" />
+                  <text x="350" y="326" textAnchor="middle" fontSize="10" fontWeight="bold" fill="var(--text-primary)">Risk Flags: Stable</text>
+                  <circle cx="350" cy="280" r="24" stroke="var(--danger-color)" strokeWidth="0.5" strokeDasharray="2,2" fill="none" />
+                </g>
+
+                {/* HUD Overlay Stats */}
+                <text x="20" y="30" className="status-text" fontWeight="bold">SYSTEM STATUS: ACTIVE</text>
+                <text x="20" y="45" className="status-text">CO-PILOT MODEL: GEMINI v2.5</text>
+                <text x="480" y="30" className="status-text" textAnchor="end">SECURE COGNITIVE FEED</text>
+                <text x="480" y="45" className="status-text" textAnchor="end">PORTFOLIO NODES: 4</text>
+              </svg>
+            </div>
           </div>
         </div>
       </section>
