@@ -10,68 +10,50 @@ export default function LandingPage({ setCurrentTab, subscription, setSubscripti
   return (
     <div className="animate-fade-in" style={{ paddingBottom: '60px' }}>
       {/* Hero Section */}
-      <section className="landing-hero">
-        <div className="container">
-          <div className="hero-tag">VentureIQ platform</div>
-          <h1>Institutional AI Startup Due Diligence</h1>
-          <p>
-            VentureIQ digests pitch decks, financial sheets, and website data to produce comprehensive, professional VC-grade risk summaries and investment scores in seconds.
-          </p>
-          <div className="hero-actions">
-            <button className="btn btn-primary" onClick={() => setCurrentTab('dashboard')}>
-              Launch Analytics Terminal
-            </button>
-            <button className="btn btn-outline" onClick={() => setCurrentTab('calculator')}>
-              Cap Table Simulator
-            </button>
+      <section className="landing-hero" style={{ padding: '60px 0' }}>
+        <div className="container" style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '48px', alignItems: 'center', textAlign: 'left' }}>
+          <div>
+            <div className="hero-tag">VentureIQ platform</div>
+            <h1 style={{ fontSize: '46px', lineHeight: '1.15', fontWeight: '800', marginBottom: '20px', textAlign: 'left' }}>Institutional AI Startup Due Diligence</h1>
+            <p style={{ fontSize: '16px', color: 'var(--text-secondary)', marginBottom: '32px', textAlign: 'left', lineHeight: '1.6' }}>
+              VentureIQ digests pitch decks, financial sheets, and website data to produce comprehensive, professional VC-grade risk summaries, interactive cap table models, and investment scores in seconds.
+            </p>
+            <div className="hero-actions" style={{ justifyContent: 'flex-start', marginInline: 0, gap: '12px' }}>
+              <button className="btn btn-primary" onClick={() => setCurrentTab('dashboard')}>
+                Launch Analytics Terminal
+              </button>
+              <button className="btn btn-outline" onClick={() => setCurrentTab('calculator')}>
+                Cap Table Simulator
+              </button>
+            </div>
           </div>
 
-          {/* Simple Mock Terminal Graphic */}
-          <div className="card" style={{ maxWidth: '900px', margin: '0 auto', padding: '16px', background: 'var(--bg-tertiary)' }}>
-            <div style={{ display: 'flex', gap: '6px', marginBottom: '12px' }}>
-              <span style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#ff5f56' }}></span>
-              <span style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#ffbd2e' }}></span>
-              <span style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#27c93f' }}></span>
-            </div>
-            <div style={{ background: 'var(--bg-secondary)', borderRadius: '8px', padding: '24px', textAlign: 'left', border: 'var(--card-border)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px' }}>
-                <div>
-                  <h3 style={{ fontSize: '18px', fontWeight: 'bold' }}>Snowflake Due Diligence</h3>
-                  <p style={{ fontSize: '12px', color: 'var(--text-muted)' }}>AI / Software &bull; Growth Stage</p>
-                </div>
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  <span className="badge badge-success">Strong Invest</span>
-                  <span className="badge badge-primary">Score: 88/100</span>
-                </div>
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-                <div>
-                  <h4 style={{ fontSize: '14px', marginBottom: '8px', color: 'var(--text-secondary)' }}>Executive Summary</h4>
-                  <p style={{ fontSize: '13px', color: 'var(--text-primary)', lineHeight: '1.4' }}>
-                    Multi-cloud data warehouse and sharing platform separating compute and storage layers. Category-defining data lake architecture with Net Revenue Retention (NRR) of 130%+...
-                  </p>
-                </div>
-                <div>
-                  <h4 style={{ fontSize: '14px', marginBottom: '8px', color: 'var(--text-secondary)' }}>AI Score Matrix</h4>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px' }}>
-                      <span>Team Credibility</span>
-                      <strong style={{ color: 'var(--success-color)' }}>92%</strong>
-                    </div>
-                    <div style={{ height: '6px', background: 'var(--bg-tertiary)', borderRadius: '3px' }}>
-                      <div style={{ width: '92%', height: '100%', background: 'var(--success-color)', borderRadius: '3px' }}></div>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', marginTop: '4px' }}>
-                      <span>Product Moat</span>
-                      <strong style={{ color: 'var(--success-color)' }}>92%</strong>
-                    </div>
-                    <div style={{ height: '6px', background: 'var(--bg-tertiary)', borderRadius: '3px' }}>
-                      <div style={{ width: '92%', height: '100%', background: 'var(--success-color)', borderRadius: '3px' }}></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+          {/* Hero Banner Graphic Illustration */}
+          <div style={{ position: 'relative', width: '100%', display: 'flex', justifyContent: 'center' }} className="no-print">
+            <div style={{ position: 'absolute', inset: '-10px', background: 'var(--accent-glow)', filter: 'blur(40px)', borderRadius: '24px', opacity: 0.6, zIndex: 1 }} />
+            <img 
+              src="/hero_illustration.png" 
+              alt="VentureIQ AI Analytics Banner" 
+              style={{ 
+                width: '100%', 
+                maxHeight: '380px', 
+                objectFit: 'cover', 
+                borderRadius: '16px', 
+                border: 'var(--card-border)', 
+                boxShadow: 'var(--shadow-lg)', 
+                position: 'relative', 
+                zIndex: 2,
+                transform: 'perspective(800px) rotateY(-8deg) rotateX(4deg)',
+                transition: 'transform 0.4s ease',
+                cursor: 'pointer'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'perspective(800px) rotateY(0deg) rotateX(0deg) scale(1.02)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'perspective(800px) rotateY(-8deg) rotateX(4deg)';
+              }}
+            />
           </div>
         </div>
       </section>
