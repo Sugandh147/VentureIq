@@ -85,7 +85,7 @@ export default function NewAnalysisForm({ onAnalysisComplete, currentCredits, on
     })
       .then(res => {
         if (!res.ok) {
-          return res.json().then(data => { throw new Error(data.error || 'Server error') });
+          return res.json().then(data => { throw new Error(data.error || data.detail || 'Server error') });
         }
         return res.json();
       })
