@@ -6,52 +6,55 @@ export default function NewAnalysisForm({ onAnalysisComplete, currentCredits, on
   const [name, setName] = useState("");
   const [websiteUrl, setWebsiteUrl] = useState("");
   const [analyzing, setAnalyzing] = useState(false);
-  const [logIndex, setLogIndex] = useState(0);
   const [validationError, setValidationError] = useState("");
 
   const [reportResult, setReportResult] = useState(null);
   const [apiError, setApiError] = useState("");
 
-  const extractionLogs = [
-    `LOG: Querying startup registry index database for "${name}"...`,
-    `LOG: Locating corporate filings and database records...`,
-    `LOG: Success: Found matching startup records.`,
-    `LOG: Extracting operational summaries and founder credentials...`,
-    `LOG: Compiling market indicators (TAM, SAM, SOM)...`,
-    `LOG: Generating comparative competitor checklists...`,
-    `LOG: Assessing operational risk cells (Probability vs Impact)...`,
-    `LOG: Formulating 20 tailored screening questions...`,
-    `LOG: Drafting professional VC-style investment memo...`,
-    `LOG: Packaging report file. Redirecting to Terminal...`
-  ];
+  const [logs, setLogs] = useState([`LOG: Initializing AI Scraper for ${name}...`]);
 
-  // Auto-scroll logs
+  // Handle dynamic logging and API completion
   useEffect(() => {
-    let timer;
-    if (analyzing && logIndex < extractionLogs.length) {
-      timer = setTimeout(() => {
-        setLogIndex(prev => prev + 1);
-      }, 600);
-    } else if (analyzing && logIndex === extractionLogs.length) {
+    let interval;
+    if (analyzing) {
+      // If the API finished (either success or error), immediately proceed
       if (apiError) {
-        setTimeout(() => {
-          setValidationError(apiError);
-          setAnalyzing(false);
-        }, 0);
-      } else if (reportResult) {
-        setTimeout(() => {
-          onAnalysisComplete(reportResult);
-          setAnalyzing(false);
-        }, 0);
-      } else {
-        // Wait for the server response if it takes slightly longer
-        timer = setTimeout(() => {
-          setLogIndex(logIndex); // Trigger effect again
-        }, 300);
+        setValidationError(apiError);
+        setAnalyzing(false);
+        return;
       }
+      if (reportResult) {
+        onAnalysisComplete(reportResult);
+        setAnalyzing(false);
+        return;
+      }
+
+      // Generate endless logs while waiting to keep the UI engaging
+      const phrases = [
+        "Analyzing SEC filings and corporate structure...",
+        "Cross-referencing founder background data...",
+        "Running sentiment analysis on product reviews...",
+        "Estimating TAM, SAM, and SOM metrics...",
+        "Scraping competitor pricing models...",
+        "Evaluating tech stack and IP moat...",
+        "Running financial projections...",
+        "Simulating cap table dilution...",
+        "Applying proprietary risk scoring algorithms...",
+        "Synthesizing final investment memo...",
+        "Connecting to secure data pipelines...",
+        "Extracting growth velocity signals..."
+      ];
+
+      interval = setInterval(() => {
+        const nextPhrase = phrases[Math.floor(Math.random() * phrases.length)];
+        setLogs(prev => {
+          const newLogs = [...prev, `LOG: ${nextPhrase}`];
+          return newLogs.length > 5 ? newLogs.slice(newLogs.length - 5) : newLogs;
+        });
+      }, 1200);
     }
-    return () => clearTimeout(timer);
-  }, [analyzing, logIndex, reportResult, apiError, extractionLogs.length, onAnalysisComplete]);
+    return () => clearInterval(interval);
+  }, [analyzing, reportResult, apiError, onAnalysisComplete, name]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -69,7 +72,7 @@ export default function NewAnalysisForm({ onAnalysisComplete, currentCredits, on
       return;
     }
     
-    setLogIndex(0);
+    setLogs([`LOG: Initializing AI Scraper for ${name}...`]);
     setAnalyzing(true);
 
     // Call the Backend API
@@ -108,8 +111,8 @@ export default function NewAnalysisForm({ onAnalysisComplete, currentCredits, on
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', borderBottom: '1px solid #1e2640', paddingBottom: '8px', marginBottom: '8px', color: '#888' }}>
               <Terminal size={14} /> <span>console_scraper_logger</span>
             </div>
-            {extractionLogs.slice(0, logIndex).map((log, idx) => (
-              <div key={idx} className={`log-line ${idx === logIndex - 1 ? 'active' : ''}`}>
+            {logs.map((log, idx) => (
+              <div key={idx} className={`log-line ${idx === logs.length - 1 ? 'active' : ''}`}>
                 {log}
               </div>
             ))}
